@@ -3,10 +3,12 @@ from modules import machine_learning_models
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 
+# 宣言
 cnum = 10
+model_name = "Logistic" # Logistic, RandomForest, SVMの３種類から選ぶ
 id_dict = {}
 bunseki_df = pd.DataFrame()
-model_dict, dummys = machine_learning_models.create_model(cnum)
+model_dict, dummys = machine_learning_models.create_model(cnum, model_name)
 result_df = pd.DataFrame(columns=['precision', 'recall', 'f1_score', 'accuracy'])
 for i in list(dummys):
   id_dict[i] = []
