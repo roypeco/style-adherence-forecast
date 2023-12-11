@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from modules import machine_learning_models, test_SelectModel
+from modules import machine_learning_models
 
 # 宣言
 model_name = "Logistic" # Logistic, RandomForest, SVMの３種類から選ぶ
