@@ -51,19 +51,23 @@ def predict(explanatory_variable, label, project_name: str, model_name: str):
 # 入力（クラスタ数:int, モデルの名前:str）
 # 出力（モデル:model，規約違反ダミー:list）
 def create_all_model(cnum, model_name: str):
-  files = os.listdir('./sample_dataset')
-  files_dir = [f for f in files if os.path.isdir(os.path.join('./sample_dataset', f))]
+  # for文を回すファイル名を取得
+  dir_path = "dataset/row_data"
 
-  
+  # dataset内のプロジェクト名一覧取得
+  project_list = [
+      f for f in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, f))
+  ]
+
   train_df = pd.DataFrame()
   
   model_all = select_model(model_name)
   
   path = "dataset/outputs/"
     
-  for file_name in files_dir:
-    df_value = pd.read_csv(f'{path}{file_name}_value.csv')
-    df_label = pd.read_csv(f'{path}{file_name}_label.csv', header=None)
+  for project_name in project_list:
+    df_value = pd.read_csv(f'{path}{project_name}_value.csv')
+    df_label = pd.read_csv(f'{path}{project_name}_label.csv', header=None)
 
     # 説明変数，目的変数を学習用，テスト用に分割
     # X_train, _, Y_train, _ = train_test_split(df_value, df_label, test_size=0.2, shuffle=False)
@@ -78,7 +82,8 @@ def create_all_model(cnum, model_name: str):
   
   # print(train_df.head())
   try:
-    model_all.fit(df_marge.drop(['Project_name', 'Cluster_num', 'AnsTF'], axis=1), df_marge["AnsTF"])
+    # model_all.fit(df_marge.drop(['Project_name', 'Cluster_num', 'AnsTF'], axis=1), df_marge["AnsTF"])
+    model_all.fit(df_marge.drop(['Project_name', 'AnsTF'], axis=1), df_marge["AnsTF"])
   except ValueError as e:
     print(e)
     
@@ -90,8 +95,8 @@ def create_all_model(cnum, model_name: str):
 # 出力（モデル:dict(key:project name, value:model))，規約違反ダミー:list）  
 def create_model(cnum: int, model_name: str):
   # files = os.listdir('./sample_dataset')
-  # files_dir = [f for f in files if os.path.isdir(os.path.join('./sample_dataset', f))]
-  files_dir = ['python-bugzilla', 'howdoi', 'python-cloudant', 'hickle', 'pyscard',
+  # project_list = [f for f in files if os.path.isdir(os.path.join('./sample_dataset', f))]
+  project_list = ['python-bugzilla', 'howdoi', 'python-cloudant', 'hickle', 'pyscard',
             'transitions', 'pynput', 'OWSLib', 'schema_salad', 'schematics']
   
   train_df = pd.DataFrame()
@@ -105,9 +110,9 @@ def create_model(cnum: int, model_name: str):
   else:
     path = f"./dataset/createData_{cnum}/"
     
-  for file_name in files_dir:
-    df_value = pd.read_csv(f'{path}{file_name}_train.csv')
-    df_label = pd.read_csv(f'{path}{file_name}_label.csv', header=None)
+  for project_name in project_list:
+    df_value = pd.read_csv(f'{path}{project_name}_train.csv')
+    df_label = pd.read_csv(f'{path}{project_name}_label.csv', header=None)
 
     # 説明変数，目的変数を学習用，テスト用に分割
     X_train, _, Y_train, _ = train_test_split(df_value, df_label, test_size=0.2, shuffle=False)

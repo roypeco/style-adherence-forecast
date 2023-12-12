@@ -15,7 +15,7 @@ python_version = "3.10"
 
 [scripts]
 conv = "python src/conventional_method.py"
-marge = "python src/marge_method.py"
+merge = "python src/merge_method.py"
 cross = "python src/cross_method.py"
 test = "python src/modules/test.py"
 dataset = "python dataset_creation/create_dataset.py"
