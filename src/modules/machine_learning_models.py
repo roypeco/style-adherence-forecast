@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
@@ -21,10 +22,17 @@ def predict(explanatory_variable, label, project_name: str, model_name: str):
   Y_test  = Y_test.values.ravel()
   
   # モデルの学習
-  model.fit(X_train.drop(['Project_name', 'Cluster_num'], axis=1), Y_train)
+  # model.fit(X_train.drop(['Project_name', 'Cluster_num'], axis=1), Y_train)
+  try:
+    model.fit(X_train.drop(['Project_name'], axis=1), Y_train)
+  except ValueError as e:
+    print(project_name)
+    result = {'precision': "NaN", 'recall': "NaN", 'f1_score': "NaN", 'accuracy': "NaN"}
+    return pd.DataFrame([result], index=[project_name]), 0
 
   # モデルを使った学習
-  predict_result = model.predict(X_test.drop(['Project_name', 'Cluster_num'], axis=1))
+  # predict_result = model.predict(X_test.drop(['Project_name', 'Cluster_num'], axis=1))
+  predict_result = model.predict(X_test.drop(['Project_name'], axis=1))
   
   # 分析用DF
   return_df = X_test
@@ -43,22 +51,18 @@ def predict(explanatory_variable, label, project_name: str, model_name: str):
 # 入力（クラスタ数:int, モデルの名前:str）
 # 出力（モデル:model，規約違反ダミー:list）
 def create_all_model(cnum, model_name: str):
-  # files = os.listdir('./sample_dataset')
-  # files_dir = [f for f in files if os.path.isdir(os.path.join('./sample_dataset', f))]
-  files_dir = ['python-bugzilla', 'howdoi', 'python-cloudant', 'hickle', 'pyscard',
-            'transitions', 'pynput', 'OWSLib', 'schema_salad', 'schematics']
+  files = os.listdir('./sample_dataset')
+  files_dir = [f for f in files if os.path.isdir(os.path.join('./sample_dataset', f))]
+
   
   train_df = pd.DataFrame()
   
   model_all = select_model(model_name)
   
-  if cnum == 5:
-    path = "./dataset/createData_05/"
-  else:
-    path = f"./dataset/createData_{cnum}/"
+  path = "dataset/outputs/"
     
   for file_name in files_dir:
-    df_value = pd.read_csv(f'{path}{file_name}_train.csv')
+    df_value = pd.read_csv(f'{path}{file_name}_value.csv')
     df_label = pd.read_csv(f'{path}{file_name}_label.csv', header=None)
 
     # 説明変数，目的変数を学習用，テスト用に分割
@@ -149,6 +153,7 @@ def select_model(model_name: str):
     
     case "SVM":
       model = SVC(kernel='linear',
+                  class_weight='balanced',
                   C=1.0, 
                   random_state=0
                   )

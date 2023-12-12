@@ -6,20 +6,27 @@ from modules import machine_learning_models
 model_name = "Logistic" # Logistic, RandomForest, SVMの３種類から選ぶ
 
 # for文を回すファイル名を取得
-# files = os.listdir('./sample_dataset')
-# files_dir = [f for f in files if os.path.isdir(os.path.join('./sample_dataset', f))]
-files_dir = ['python-bugzilla', 'howdoi', 'python-cloudant', 'hickle', 'pyscard',
-            'transitions', 'pynput', 'OWSLib', 'schema_salad', 'schematics']
+dir_path = "dataset/row_data"
+
+# dataset内のプロジェクト名一覧取得
+project_list = [
+    f for f in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, f))
+]
+
 
 #結果格納用のDFの宣言
 result_df = pd.DataFrame(columns=['precision', 'recall', 'f1_score', 'accuracy'])
 bunseki_df = pd.DataFrame()
 
 # 従来手法の実行:machine_learning_models.predict
-for file_name in files_dir:
-  df_value = pd.read_csv(f'./dataset/createData_10/{file_name}_train.csv')
-  df_label = pd.read_csv(f'./dataset/createData_10/{file_name}_label.csv', header=None)
-  tmp1, tmp2 = machine_learning_models.predict(df_value, df_label, file_name, model_name)
+for file_name in project_list:
+  try:
+    df_value = pd.read_csv(f'./dataset/outputs/{file_name}_value.csv')
+    df_label = pd.read_csv(f'./dataset/outputs/{file_name}_label.csv', header=None)
+  except pd.errors.EmptyDataError as e:
+    print(file_name)
+  tmp1, _ = machine_learning_models.predict(df_value, df_label, file_name, model_name)
   result_df = pd.concat([result_df, tmp1], axis=0)
-  
+
+result_df.to_csv("results/conventional_method/out.csv")
 print(result_df)
