@@ -4,16 +4,16 @@ from sklearn.cluster import AgglomerativeClustering
 
 # ToDo
 # データセットができてからクラスタリングをするためのメソッド
-def calc_cluster(cluster_num: int):
+def get_cluster(cluster_num: int):
   dir_path = "dataset"
   df_all = pd.DataFrame()
 
-  path_list = [
+  project_list = [
       f for f in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, f))
   ]
 
-  for name in path_list:
-    df = pd.read_csv(name)
+  for priject_name in project_list:
+    df = pd.read_csv(priject_name)
     df_all = pd.concat([df_all, df], ignore_index=True)
 
   # ラベルを得る
