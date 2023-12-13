@@ -2,6 +2,7 @@ import pandas as pd
 import os
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.exceptions import UndefinedMetricWarning
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score # 評価指標算出用
@@ -40,10 +41,31 @@ def predict(explanatory_variable, label, project_name: str, model_name: str):
   return_df["predict_TF"] = predict_result
   
   # 結果の格納
-  result = {'precision': format(precision_score(Y_test, predict_result), '.2f'), 'recall': format(recall_score(Y_test, predict_result), '.2f'),
-            'f1_score': format(f1_score(Y_test, predict_result), '.2f'), 'accuracy': format(accuracy_score(Y_test, predict_result), '.2f')
-           }
-  
+  try:
+    result = {'precision': format(precision_score(Y_test, predict_result), '.2f')}
+  except ZeroDivisionError as e:
+    result = {'precision':"Err"}
+  except UndefinedMetricWarning as e:
+    result = {'precision':"Err"}
+  try:
+    result['recall'] = format(recall_score(Y_test, predict_result), '.2f')
+  except ZeroDivisionError as e:
+    result['recall'] = "Err"
+  except UndefinedMetricWarning as e:
+    result['recall'] = "Err"
+  try:
+    result['f1_score'] = format(f1_score(Y_test, predict_result), '.2f')
+  except ZeroDivisionError as e:
+    result['f1_score'] = "Err"
+  except UndefinedMetricWarning as e:
+    result['f1_score'] = "Err"
+  try:
+    result['accuracy'] = format(accuracy_score(Y_test, predict_result), '.2f')
+  except ZeroDivisionError as e:
+    result['accuracy'] = "Err"
+  except UndefinedMetricWarning as e:
+    result['accuracy'] = "Err"
+
   return pd.DataFrame([result], index=[project_name]), return_df.reset_index(drop=True)
 
 
