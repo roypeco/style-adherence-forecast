@@ -13,7 +13,7 @@ def get_cluster(cluster_num: int):
   ]
 
   for priject_name in project_list:
-    df = pd.read_csv(priject_name)
+    df = pd.read_csv(f"dataset/outputs/{priject_name}_value.csv")
     df_all = pd.concat([df_all, df], ignore_index=True)
 
   # ラベルを得る
