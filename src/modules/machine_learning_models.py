@@ -1,11 +1,13 @@
 import pandas as pd
 import os
+import warnings
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.exceptions import UndefinedMetricWarning
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score # 評価指標算出用
+warnings.filterwarnings("always", category=UserWarning)
 
 # 従来手法の予測結果の算出
 # 入力（説明変数:df，目的変数:df，プロジェクト名:str, モデルの名前:str）
@@ -45,26 +47,30 @@ def predict(explanatory_variable, label, project_name: str, model_name: str):
     result = {'precision': format(precision_score(Y_test, predict_result), '.2f')}
   except ZeroDivisionError as e:
     result = {'precision':"Err"}
-  except UndefinedMetricWarning as e:
-    result = {'precision':"Err"}
+  except UserWarning as e:
+    if "UndefinedMetricWarning" in str(e.__class__):
+      result = {'precision':"Err"}
   try:
     result['recall'] = format(recall_score(Y_test, predict_result), '.2f')
   except ZeroDivisionError as e:
     result['recall'] = "Err"
-  except UndefinedMetricWarning as e:
-    result['recall'] = "Err"
+  except UserWarning as e:
+    if "UndefinedMetricWarning" in str(e.__class__):
+      result['recall'] = "Err"
   try:
     result['f1_score'] = format(f1_score(Y_test, predict_result), '.2f')
   except ZeroDivisionError as e:
     result['f1_score'] = "Err"
-  except UndefinedMetricWarning as e:
-    result['f1_score'] = "Err"
+  except UserWarning as e:
+    if "UndefinedMetricWarning" in str(e.__class__):
+      result['f1_score'] = "Err"
   try:
     result['accuracy'] = format(accuracy_score(Y_test, predict_result), '.2f')
   except ZeroDivisionError as e:
     result['accuracy'] = "Err"
-  except UndefinedMetricWarning as e:
-    result['accuracy'] = "Err"
+  except UserWarning as e:
+    if "UndefinedMetricWarning" in str(e.__class__):
+      result['accuracy'] = "Err"
 
   return pd.DataFrame([result], index=[project_name]), return_df.reset_index(drop=True)
 
