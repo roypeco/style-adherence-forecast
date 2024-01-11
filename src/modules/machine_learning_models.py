@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 import warnings
 import copy
@@ -44,34 +45,10 @@ def predict(explanatory_variable, label, project_name: str, model_name: str):
   return_df["predict_TF"] = copy.deepcopy(predict_result)
   
   # 結果の格納
-  try:
-    result = {'precision': format(precision_score(Y_test, predict_result), '.2f')}
-  except ZeroDivisionError as e:
-    result = {'precision':"Err"}
-  except UserWarning as e:
-    if "UndefinedMetricWarning" in str(e.__class__):
-      result = {'precision':"Err"}
-  try:
-    result['recall'] = format(recall_score(Y_test, predict_result), '.2f')
-  except ZeroDivisionError as e:
-    result['recall'] = "Err"
-  except UserWarning as e:
-    if "UndefinedMetricWarning" in str(e.__class__):
-      result['recall'] = "Err"
-  try:
-    result['f1_score'] = format(f1_score(Y_test, predict_result), '.2f')
-  except ZeroDivisionError as e:
-    result['f1_score'] = "Err"
-  except UserWarning as e:
-    if "UndefinedMetricWarning" in str(e.__class__):
-      result['f1_score'] = "Err"
-  try:
-    result['accuracy'] = format(accuracy_score(Y_test, predict_result), '.2f')
-  except ZeroDivisionError as e:
-    result['accuracy'] = "Err"
-  except UserWarning as e:
-    if "UndefinedMetricWarning" in str(e.__class__):
-      result['accuracy'] = "Err"
+  result = {'precision': format(precision_score(Y_test, predict_result, zero_division=np.nan), '.2f')}
+  result['recall'] = format(recall_score(Y_test, predict_result, zero_division=np.nan), '.2f')
+  result['f1_score'] = format(f1_score(Y_test, predict_result, zero_division=np.nan), '.2f')
+  result['accuracy'] = format(accuracy_score(Y_test, predict_result), '.2f')
 
   return pd.DataFrame([result], index=[project_name]), return_df.reset_index(drop=True)
 

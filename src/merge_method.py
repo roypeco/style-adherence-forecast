@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 from modules import machine_learning_models
 from sklearn.exceptions import UndefinedMetricWarning
@@ -56,32 +57,13 @@ for project_name in project_list:
   
   # print(predict_result)
     
-  try:
-    result = {'precision': format(precision_score(Y_test, predict_result), '.2f')}
-  except ZeroDivisionError as e:
-    result = {'precision':"Err"}
-  except UndefinedMetricWarning as e:
-    result = {'precision':"Err"}
-  try:
-    result['recall'] = format(recall_score(Y_test, predict_result), '.2f')
-  except ZeroDivisionError as e:
-    result['recall'] = "Err"
-  except UndefinedMetricWarning as e:
-    result['recall'] = "Err"
-  try:
-    result['f1_score'] = format(f1_score(Y_test, predict_result), '.2f')
-  except ZeroDivisionError as e:
-    result['f1_score'] = "Err"
-  except UndefinedMetricWarning as e:
-    result['f1_score'] = "Err"
-  try:
-    result['accuracy'] = format(accuracy_score(Y_test, predict_result), '.2f')
-  except ZeroDivisionError as e:
-    result['accuracy'] = "Err"
-  except UndefinedMetricWarning as e:
-    result['accuracy'] = "Err"
-  # print(result)
+  result = {'precision': format(precision_score(Y_test, predict_result, zero_division=np.nan), '.2f')}
+  result['recall'] = format(recall_score(Y_test, predict_result, zero_division=np.nan), '.2f')
+  result['recall'] = "Err"
+  result['f1_score'] = format(f1_score(Y_test, predict_result, zero_division=np.nan), '.2f')
+  result['accuracy'] = format(accuracy_score(Y_test, predict_result), '.2f')
+
   result_df = pd.concat([result_df, pd.DataFrame([result], index=[project_name])], axis=0)
 
-result_df.to_csv("results/merge/out.csv")
+result_df.to_csv(f"results/merge/{model_name}.csv")
 print(result_df)

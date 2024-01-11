@@ -3,7 +3,8 @@ import pandas as pd
 from modules import machine_learning_models
 
 # 宣言
-model_name = "Logistic" # Logistic, RandomForest, SVMの３種類から選ぶ
+model_name = "SVM" # Logistic, RandomForest, SVMの３種類から選ぶ
+counter = 1
 
 # for文を回すファイル名を取得
 dir_path = "dataset/row_data"
@@ -24,9 +25,11 @@ for file_name in project_list:
     df_value = pd.read_csv(f'./dataset/outputs/{file_name}_value.csv')
     df_label = pd.read_csv(f'./dataset/outputs/{file_name}_label.csv', header=None)
   except pd.errors.EmptyDataError as e:
-    print(file_name)
+    print(file_name, e)
   tmp1, _ = machine_learning_models.predict(df_value, df_label, file_name, model_name)
   result_df = pd.concat([result_df, tmp1], axis=0)
+  print(file_name, f"{counter} / {len(project_list)}")
+  counter += 1
 
-result_df.to_csv("results/conventional_method/out.csv")
+result_df.to_csv(f"results/conventional/{model_name}.csv")
 print(result_df)

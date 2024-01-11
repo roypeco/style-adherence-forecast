@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from modules import machine_learning_models
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
@@ -79,8 +80,8 @@ for file_name in files_dir:
   
   # print(predict_result)
     
-  result = {'precision': format(precision_score(ans_list, predict_result), '.2f'), 'recall': format(recall_score(ans_list, predict_result), '.2f'),
-            'f1_score': format(f1_score(ans_list, predict_result), '.2f'), 'accuracy': format(accuracy_score(ans_list, predict_result), '.2f')
+  result = {'precision': format(precision_score(ans_list, predict_result, zero_division=np.nan), '.2f'), 'recall': format(recall_score(ans_list, predict_result, zero_division=np.nan), '.2f'),
+            'f1_score': format(f1_score(ans_list, predict_result, zero_division=np.nan), '.2f'), 'accuracy': format(accuracy_score(ans_list, predict_result), '.2f')
           }
   # print(result)
   result_df = pd.concat([result_df, pd.DataFrame([result], index=[file_name])], axis=0)
