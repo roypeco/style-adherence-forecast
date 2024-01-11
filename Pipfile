@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 pandas = "*"
 scikit-learn = "*"
+matplotlib = "*"
+japanize-matplotlib = "*"
 
 [dev-packages]
 pytest = "*"
@@ -20,3 +22,4 @@ cross = "python src/cross_method.py"
 test = "python src/modules/test.py"
 cluster = "python dataset_creation/clustering.py"
 dataset = "python dataset_creation/create_dataset.py"
+statistics = "python dataset/statistics.py"

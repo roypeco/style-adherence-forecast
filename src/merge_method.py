@@ -7,20 +7,24 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 
 # 宣言
 id_dict = {}
-model_name = "Logistic" # Logistic, RandomForest, SVMの３種類から選ぶ
+model_name = "SVM" # Logistic, RandomForest, SVMの３種類から選ぶ
 bunseki_df = pd.DataFrame()
 model_all, dummys = machine_learning_models.create_all_model(10, model_name)
 result_df = pd.DataFrame(columns=['precision', 'recall', 'f1_score', 'accuracy'])
 for i in list(dummys):
   id_dict[i] = []
 
-# for文を回すファイル名を取得
-dir_path = "dataset/row_data"
+# # for文を回すファイル名を取得
+# dir_path = "dataset/row_data"
 
-# dataset内のプロジェクト名一覧取得
-project_list = [
-    f for f in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, f))
-]
+# # dataset内のプロジェクト名一覧取得
+# project_list = [
+#     f for f in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, f))
+# ]
+
+# project_list = ["GPflow", "hickle", "python-sdk"]
+project_list = ["GPflow", "python-sdk"]
+# project_list = ["GPflow", "hickle"]
 
 path = "dataset/outputs/"
     
@@ -83,5 +87,5 @@ for project_name in project_list:
   # print(result)
   result_df = pd.concat([result_df, pd.DataFrame([result], index=[project_name])], axis=0)
 
-result_df.to_csv("results/merge/out.csv")
+result_df.to_csv(f"results/nogu/duo/{model_name}.csv")
 print(result_df)

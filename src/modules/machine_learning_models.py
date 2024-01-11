@@ -83,9 +83,10 @@ def create_all_model(cnum, model_name: str):
   dir_path = "dataset/row_data"
 
   # dataset内のプロジェクト名一覧取得
-  project_list = [
-      f for f in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, f))
-  ]
+  # project_list = [
+  #     f for f in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, f))
+  # ]
+  project_list = ["GPflow", "hickle"]
 
   train_df = pd.DataFrame()
   
