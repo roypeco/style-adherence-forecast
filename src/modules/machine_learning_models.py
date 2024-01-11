@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import warnings
+import copy
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.exceptions import UndefinedMetricWarning
@@ -38,9 +39,9 @@ def predict(explanatory_variable, label, project_name: str, model_name: str):
   predict_result = model.predict(X_test.drop(['Project_name'], axis=1))
   
   # 分析用DF
-  return_df = X_test
-  return_df["real_TF"] = Y_test
-  return_df["predict_TF"] = predict_result
+  return_df = copy.deepcopy(X_test)
+  return_df["real_TF"] = copy.deepcopy(Y_test)
+  return_df["predict_TF"] = copy.deepcopy(predict_result)
   
   # 結果の格納
   try:
@@ -101,7 +102,7 @@ def create_all_model(cnum, model_name: str):
     # X_train, _, Y_train, _ = train_test_split(df_value, df_label, test_size=0.2, shuffle=False)
     X_train, _, Y_train, _ = train_test_split(df_value, df_label, test_size=0.2, shuffle=False)
     Y_train = Y_train.values.ravel()
-    X_train["AnsTF"] = Y_train.copy()
+    X_train["AnsTF"] = copy.deepcopy(Y_train)
     train_df = pd.concat([train_df, X_train], axis=0)
     
     # コーディング規約IDをダミー変数化
@@ -145,7 +146,7 @@ def create_model(cnum: int, model_name: str):
     # 説明変数，目的変数を学習用，テスト用に分割
     X_train, _, Y_train, _ = train_test_split(df_value, df_label, test_size=0.2, shuffle=False)
     Y_train = Y_train.values.ravel()
-    X_train["AnsTF"] = Y_train
+    X_train["AnsTF"] = copy.deepcopy(Y_train)
     train_df = pd.concat([train_df, X_train], axis=0)
     
     # コーディング規約IDをダミー変数化
