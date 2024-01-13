@@ -8,8 +8,9 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 
 # 宣言
 id_dict = {}
-model_name = "Logistic" # Logistic, RandomForest, SVMの３種類から選ぶ
+model_name = "SVM" # Logistic, RandomForest, SVMの３種類から選ぶ
 bunseki_df = pd.DataFrame()
+counter = 1
 model_all, dummys = machine_learning_models.create_all_model(10, model_name)
 result_df = pd.DataFrame(columns=['precision', 'recall', 'f1_score', 'accuracy'])
 for i in list(dummys):
@@ -59,11 +60,13 @@ for project_name in project_list:
     
   result = {'precision': format(precision_score(Y_test, predict_result, zero_division=np.nan), '.2f')}
   result['recall'] = format(recall_score(Y_test, predict_result, zero_division=np.nan), '.2f')
-  result['recall'] = "Err"
   result['f1_score'] = format(f1_score(Y_test, predict_result, zero_division=np.nan), '.2f')
   result['accuracy'] = format(accuracy_score(Y_test, predict_result), '.2f')
 
   result_df = pd.concat([result_df, pd.DataFrame([result], index=[project_name])], axis=0)
+  
+  print(project_name, f"{counter} / {len(project_list)}")
+  counter += 1
 
 result_df.to_csv(f"results/merge/{model_name}.csv")
 print(result_df)
