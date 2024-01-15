@@ -18,19 +18,6 @@ with open("dataset/project_list.txt") as f:
 
 exit_flg = False
 
-"""
-ヘッダーを作成
-col_label = [["Warning ID", "Project_name", "Cluster_num", "AvgCyclomatic", "AvgCyclomaticModified", "AvgCyclomaticStrict", "AvgEssential", "AvgLine", 
-             "AvgLineBlank", "AvgLineCode", "AvgLineComment", "CountClassDerived", "CountClassBase", 
-             "CountDeclClass", "CountDeclFile", "CountDeclFunction", "CountDeclInstanceMethod", "CountDeclInstanceVariable",
-             "CountDeclMethod", "CountDeclMethodAll", "CountLine", "CountLineBlank", "CountLineCode", "CountLineCodeDecl",
-             "CountLineCodeExe", "CountLineComment", "CountPath", "CountPathLog", "CountStmt", "CountStmtDecl",
-             "CountStmtExe", "Cyclomatic", "CyclomaticModified", "CyclomaticStrict", "Essential", "MaxCyclomatic",
-             "MaxCyclomaticModified", "MaxCyclomaticStrict", "MaxEssential", "MaxInheritanceTree", "MaxNesting",
-             "RatioCommentToCode", "SumCyclomatic", "SumCyclomaticModified", "SumCyclomaticStrict", "SumEssential"]]
-"""
-             
-# クラスタなし
 col_label = [["Warning ID", "Project_name", "AvgCyclomatic", "AvgCyclomaticModified", "AvgCyclomaticStrict", "AvgEssential", "AvgLine", 
              "AvgLineBlank", "AvgLineCode", "AvgLineComment", "CountClassDerived", "CountClassBase", 
              "CountDeclClass", "CountDeclFile", "CountDeclFunction", "CountDeclInstanceMethod", "CountDeclInstanceVariable",

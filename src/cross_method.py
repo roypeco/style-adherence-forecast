@@ -6,6 +6,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 
 # 宣言
 cnum = 10
+path = "dataset/outputs"
 model_name = "Logistic" # Logistic, RandomForest, SVMの３種類から選ぶ
 id_dict = {}
 bunseki_df = pd.DataFrame()
@@ -17,27 +18,29 @@ for i in list(dummys):
 with open("dataset/project_list.txt") as f:
   project_list = f.read().splitlines()
 
-if cnum == 5:
-    path = "./dataset/createData_05/"
-else:
-  path = f"./dataset/createData_{cnum}/"
+# if cnum == 5:
+#     path = "./dataset/createData_05/"
+# else:
+#   path = f"./dataset/createData_{cnum}/"
     
 for file_name in project_list:
-  df_value = pd.read_csv(f'{path}{file_name}_train.csv')
-  df_label = pd.read_csv(f'{path}{file_name}_label.csv', header=None)
+  df_value = pd.read_csv(f'{path}/{file_name}_train.csv')
+  df_label = pd.read_csv(f'{path}/{file_name}_label.csv', header=None)
+  df_cluster = pd.read_csv(f'{path}/{file_name}_cluster.csv', header=None)
   X_train, X_test, Y_train, Y_test = train_test_split(df_value, df_label, test_size=0.2, shuffle=False)
-
-  Y_test = Y_test.values.ravel()
-  X_test["AnsTF"] = Y_test
-  X_test = X_test.reset_index(drop=True)
 
   Y_train = Y_train.values.ravel()
   X_train["AnsTF"] = Y_train
   X_train = X_train.reset_index(drop=True)
   
+  Y_test = Y_test.values.ravel()
+  X_test["AnsTF"] = Y_test
+  X_test = X_test.reset_index(drop=True)
+  
   id_dict.clear()
   for i in list(dummys):
     id_dict[i] = []
+
   for wid in X_test["Warning ID"]:
     if wid in id_dict:
       id_dict[wid].append(1)
@@ -59,18 +62,11 @@ for file_name in project_list:
     try:
       if len(list(test_df[test_df['Cluster_num'] == i]["AnsTF"])) != 0:
         if model_dict["cluster_"+str(i)].__getattribute__('coef_') is not None:
-        # if model_dict["Cluster_"+str(i)] != 0 or 1:
           predict_result.extend(model_dict["cluster_"+str(i)].predict(test_df[test_df['Cluster_num'] == i].drop(['Warning ID', 'Project_name', 'Cluster_num', "AnsTF"], axis=1)))
           ans_list.extend(list(test_df[test_df['Cluster_num'] == i]["AnsTF"]))
           for j in range(len(list(test_df[test_df['Cluster_num'] == i]["AnsTF"]))):
             cluster_list.append(i)
     except (AttributeError, KeyError):
-      # for j in range(len(list(X_test[X_test["Cluster_num"]==i]["AnsTF"]))):
-      #   predict_result.extend(list(model_dict["Cluster_"+str(i)])*len(list(X_test[X_test["Cluster_num"]==i]["AnsTF"])))
-      #   predict_result.extend([0]*len(list(X_test[X_test["Cluster_num"]==i]["AnsTF"])))
-      #   ans_list.extend(list(test_df[test_df['Cluster_num'] == i]["AnsTF"]))
-      #   for j in range(len(list(test_df[test_df['Cluster_num'] == i]["AnsTF"]))):
-      #     cluster_list.append(i)
       print(file_name + ":skip cluster " + str(i))
   
   tmp = pd.DataFrame({'Cluster_num': cluster_list, 'real_TF':ans_list, 'predict_TF':predict_result})
