@@ -1,0 +1,18 @@
+version: '3'
+services:
+  style-adherence-forcecast:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"  # ポート番号を変更してください
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+        volume:
+          nocopy: true
+    environment:
+      - DEBUG=True  # 必要に応じて環境変数を設定
+    tty: true
+    stdin_open: true
