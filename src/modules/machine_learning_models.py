@@ -58,12 +58,8 @@ def predict(explanatory_variable, label, project_name: str, model_name: str):
 # 出力（モデル:model，規約違反ダミー:list）
 def create_all_model(cnum, model_name: str):
   # for文を回すファイル名を取得
-  dir_path = "dataset/row_data"
-
-  # dataset内のプロジェクト名一覧取得
-  project_list = [
-      f for f in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, f))
-  ]
+  with open("dataset/project_list.txt") as f:
+    project_list = f.read().splitlines()
 
   train_df = pd.DataFrame()
   
@@ -100,10 +96,8 @@ def create_all_model(cnum, model_name: str):
 # 入力（クラスタ数:int）
 # 出力（モデル:dict(key:project name, value:model))，規約違反ダミー:list）  
 def create_model(cnum: int, model_name: str):
-  # files = os.listdir('./sample_dataset')
-  # project_list = [f for f in files if os.path.isdir(os.path.join('./sample_dataset', f))]
-  project_list = ['python-bugzilla', 'howdoi', 'python-cloudant', 'hickle', 'pyscard',
-            'transitions', 'pynput', 'OWSLib', 'schema_salad', 'schematics']
+  with open("dataset/project_list.txt") as f:
+    project_list = f.read().splitlines()
   
   train_df = pd.DataFrame()
   

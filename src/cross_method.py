@@ -14,17 +14,15 @@ result_df = pd.DataFrame(columns=['precision', 'recall', 'f1_score', 'accuracy']
 for i in list(dummys):
   id_dict[i] = []
 
-# files = os.listdir('./sample_dataset')
-# files_dir = [f for f in files if os.path.isdir(os.path.join('./sample_dataset', f))]
-files_dir = ['python-bugzilla', 'howdoi', 'python-cloudant', 'hickle', 'pyscard',
-            'transitions', 'pynput', 'OWSLib', 'schema_salad', 'schematics']
+with open("dataset/project_list.txt") as f:
+  project_list = f.read().splitlines()
 
 if cnum == 5:
     path = "./dataset/createData_05/"
 else:
   path = f"./dataset/createData_{cnum}/"
     
-for file_name in files_dir:
+for file_name in project_list:
   df_value = pd.read_csv(f'{path}{file_name}_train.csv')
   df_label = pd.read_csv(f'{path}{file_name}_label.csv', header=None)
   X_train, X_test, Y_train, Y_test = train_test_split(df_value, df_label, test_size=0.2, shuffle=False)

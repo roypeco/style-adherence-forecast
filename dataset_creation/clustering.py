@@ -2,7 +2,6 @@ import csv
 import pandas as pd
 from modules.get_cluster import get_cluster
 
-dir_path = "dataset/row_data/"
 start_num = 0
 
 # クラスタを計算し，ラベルのリストを取得

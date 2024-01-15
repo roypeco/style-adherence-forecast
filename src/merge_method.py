@@ -17,12 +17,8 @@ for i in list(dummys):
   id_dict[i] = []
 
 # for文を回すファイル名を取得
-dir_path = "dataset/row_data"
-
-# dataset内のプロジェクト名一覧取得
-project_list = [
-    f for f in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, f))
-]
+with open("dataset/project_list.txt") as f:
+  project_list = f.read().splitlines()
 
 path = "dataset/outputs/"
     

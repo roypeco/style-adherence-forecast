@@ -18,12 +18,10 @@ def normalize_dataframe(input_df: pd.DataFrame):
 
 # データセットができてからクラスタリングをするためのメソッド
 def get_cluster(cluster_num: int):
-  dir_path = "dataset/row_data"
   df_all = pd.DataFrame()
 
-  project_list = [
-      f for f in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, f))
-  ]
+  with open("dataset/project_list.txt") as f:
+    project_list = f.read().splitlines()
 
   for priject_name in project_list:
     df = pd.read_csv(f"dataset/outputs/{priject_name}_value.csv")

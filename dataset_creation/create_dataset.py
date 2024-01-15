@@ -12,9 +12,8 @@ warnings.simplefilter('ignore')
 dir_path = "dataset/row_data"
 
 # dataset内のプロジェクト名一覧取得
-project_list = [
-    f for f in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, f))
-]
+with open("dataset/project_list.txt") as f:
+  project_list = f.read().splitlines()
 
 
 exit_flg = False

@@ -3,16 +3,12 @@ import pandas as pd
 from modules import machine_learning_models
 
 # 宣言
-model_name = "SVM" # Logistic, RandomForest, SVMの３種類から選ぶ
+model_name = "Logistic" # Logistic, RandomForest, SVMの３種類から選ぶ
 counter = 1
 
 # for文を回すファイル名を取得
-dir_path = "dataset/row_data"
-
-# dataset内のプロジェクト名一覧取得
-project_list = [
-    f for f in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, f))
-]
+with open("dataset/project_list.txt") as f:
+  project_list = f.read().splitlines()
 
 
 #結果格納用のDFの宣言
