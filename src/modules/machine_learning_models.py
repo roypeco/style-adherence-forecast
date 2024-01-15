@@ -99,39 +99,43 @@ def create_model(cnum: int, model_name: str):
   with open("dataset/project_list.txt") as f:
     project_list = f.read().splitlines()
   
-  train_df = pd.DataFrame()
+  df_all = pd.DataFrame()
   
   model_dict = {}
   for i in range(cnum):
-    model_dict["cluster_"+str(i)] = select_model(model_name)
+    model_dict[f"cluster_{i}"] = select_model(model_name)
   
-  if cnum == 5:
-    path = "./dataset/createData_05/"
-  else:
-    path = f"./dataset/createData_{cnum}/"
+  path = "dataset/outputs"
+  # if cnum == 5:
+  #   path = "./dataset/createData_05/"
+  # else:
+  #   path = f"./dataset/createData_{cnum}/"
     
   for project_name in project_list:
-    df_value = pd.read_csv(f'{path}{project_name}_train.csv')
-    df_label = pd.read_csv(f'{path}{project_name}_label.csv', header=None)
+    df_value = pd.read_csv(f'{path}/{project_name}_value.csv')
+    df_label = pd.read_csv(f'{path}/{project_name}_label.csv', header=None)
+    df_cluster = pd.read_csv(f'{path}/{project_name}_cluster.csv', header=None)
 
     # 説明変数，目的変数を学習用，テスト用に分割
-    X_train, _, Y_train, _ = train_test_split(df_value, df_label, test_size=0.2, shuffle=False)
+    X_train, _, Y_train, _, Z_train, _ = train_test_split(df_value, df_label, df_cluster, test_size=0.2, shuffle=False)
     Y_train = Y_train.values.ravel()
+    Z_train = Z_train.values.ravel()
+    X_train["Cluster_num"] = copy.deepcopy(Z_train)
     X_train["AnsTF"] = copy.deepcopy(Y_train)
-    train_df = pd.concat([train_df, X_train], axis=0)
+    df_all = pd.concat([df_all, X_train], axis=0)
     
     # コーディング規約IDをダミー変数化
-  df_marge = pd.concat([pd.get_dummies(train_df['Warning ID']), train_df.drop(columns='Warning ID')], axis=1)
-  dummys = list(pd.get_dummies(train_df['Warning ID']))
+  df_marge = pd.concat([pd.get_dummies(df_all['Warning ID']), df_all.drop(columns='Warning ID')], axis=1)
+  dummys = list(pd.get_dummies(df_all['Warning ID']))
   
-  # print(train_df.head())
+  # print(df_all.head())
   for i in range(cnum):
     try:
-      model_dict["cluster_"+str(i)].fit(df_marge[df_marge['Cluster_num'] == i].drop(['Project_name', 'Cluster_num', 'AnsTF'], axis=1),
+      model_dict[f"cluster_{i}"].fit(df_marge[df_marge['Cluster_num'] == i].drop(['Project_name', 'Cluster_num', 'AnsTF'], axis=1),
                                         df_marge[df_marge['Cluster_num'] == i]["AnsTF"])
-    except ValueError:
+    except ValueError as e:
       # model_dict["cluster_"+str(i)] = df_marge[df_marge['Cluster_num'] == i]["AnsTF"][0]
-      pass
+      print(f"cluster_{i} {e}")
     
   return model_dict, dummys
   
