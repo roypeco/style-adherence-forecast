@@ -16,7 +16,7 @@ for project_name in project_list:
 
   with open(output_file_path, 'w', newline='') as f:
     writer = csv.writer(f)
-    for i in cluster_label[start_num:start_num+len(df_label)]:
+    for i in cluster_label[start_num:start_num+df_label]:
       writer.writerow([i])
 
-  start_num += len(df_label)
+  start_num += df_label
