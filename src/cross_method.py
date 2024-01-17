@@ -9,7 +9,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 cnum = 10
 counter = 1
 path = "dataset/outputs"
-model_name = "Logistic" # Logistic, RandomForest, SVMの３種類から選ぶ
+model_name = "RandomForest" # Logistic, RandomForest, SVMの３種類から選ぶ
 id_dict = {}
 bunseki_df = pd.DataFrame()
 model_dict, dummys = machine_learning_models.create_model(cnum, model_name)
@@ -19,11 +19,6 @@ for i in list(dummys):
 
 with open("dataset/project_list.txt") as f:
   project_list = f.read().splitlines()
-
-# if cnum == 5:
-#     path = "./dataset/createData_05/"
-# else:
-#   path = f"./dataset/createData_{cnum}/"
     
 for project_name in project_list:
   df_value = pd.read_csv(f'{path}/{project_name}_value.csv')
@@ -65,13 +60,22 @@ for project_name in project_list:
   for i in range(cnum):
     try:
       if len(list(test_df[test_df['Cluster_num'] == i]["AnsTF"])) != 0:
-        if model_dict[f"cluster_{i}"].__getattribute__('coef_') is not None:
-          predict_result.extend(model_dict[f"cluster_{i}"].predict(test_df[test_df['Cluster_num'] == i].drop(['Warning ID', 'Project_name', 'Cluster_num', "AnsTF"], axis=1)))
-          ans_list.extend(list(test_df[test_df['Cluster_num'] == i]["AnsTF"]))
-          for j in range(len(list(test_df[test_df['Cluster_num'] == i]["AnsTF"]))):
-            cluster_list.append(i)
-    except (AttributeError, KeyError):
-      print(f"project_name: skip cluster_{i}")
+        match model_name:
+          case "Logistic":
+            if model_dict[f"cluster_{i}"].__getattribute__('coef_') is not None:
+              predict_result.extend(model_dict[f"cluster_{i}"].predict(test_df[test_df['Cluster_num'] == i].drop(['Warning ID', 'Project_name', 'Cluster_num', "AnsTF"], axis=1)))
+              ans_list.extend(list(test_df[test_df['Cluster_num'] == i]["AnsTF"]))
+              for j in range(len(list(test_df[test_df['Cluster_num'] == i]["AnsTF"]))):
+                cluster_list.append(i)
+
+          case "RandomForest" | "SVM":
+            predict_result.extend(model_dict[f"cluster_{i}"].predict(test_df[test_df['Cluster_num'] == i].drop(['Warning ID', 'Project_name', 'Cluster_num', "AnsTF"], axis=1)))
+            ans_list.extend(list(test_df[test_df['Cluster_num'] == i]["AnsTF"]))
+            for j in range(len(list(test_df[test_df['Cluster_num'] == i]["AnsTF"]))):
+              cluster_list.append(i)
+
+    except (AttributeError, KeyError) as e:
+      print(f"{project_name}: skip cluster_{i} {e}")
   
   # tmp = pd.DataFrame({'Cluster_num': cluster_list, 'real_TF':ans_list, 'predict_TF':predict_result})
   # bunseki_df = pd.concat([bunseki_df, count_cluster(cnum, project_name, tmp)], axis=0)
@@ -88,6 +92,10 @@ for project_name in project_list:
   
   print(project_name, f"{counter} / {len(project_list)}")
   counter += 1
+  
+  if project_name == "wcwidth":
+    print(ans_list)
+    print(predict_result)
 
 result_df.to_csv(f"results/cross/{model_name}.csv")
 print(result_df)

@@ -3,6 +3,7 @@ import numpy as np
 import os
 import warnings
 import copy
+import joblib
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.exceptions import UndefinedMetricWarning
@@ -30,6 +31,8 @@ def predict(explanatory_variable, label, project_name: str, model_name: str):
   # model.fit(X_train.drop(['Project_name', 'Cluster_num'], axis=1), Y_train)
   try:
     model.fit(X_train.drop(['Project_name'], axis=1), Y_train)
+    filename = f'src/models/conventional/{model_name}/{project_name}_model.sav'
+    joblib.dump(model, filename)
   except ValueError as e:
     print(project_name)
     result = {'precision': "NaN", 'recall': "NaN", 'f1_score': "NaN", 'accuracy': "NaN"}
@@ -106,10 +109,6 @@ def create_model(cnum: int, model_name: str):
     model_dict[f"cluster_{i}"] = select_model(model_name)
   
   path = "dataset/outputs"
-  # if cnum == 5:
-  #   path = "./dataset/createData_05/"
-  # else:
-  #   path = f"./dataset/createData_{cnum}/"
     
   for project_name in project_list:
     df_value = pd.read_csv(f'{path}/{project_name}_value.csv')
@@ -130,9 +129,11 @@ def create_model(cnum: int, model_name: str):
   
   # print(df_all.head())
   for i in range(cnum):
+    
     try:
-      model_dict[f"cluster_{i}"].fit(df_marge[df_marge['Cluster_num'] == i].drop(['Project_name', 'Cluster_num', 'AnsTF'], axis=1),
-                                        df_marge[df_marge['Cluster_num'] == i]["AnsTF"])
+      model_dict[f"cluster_{i}"].fit(df_marge[df_marge['Cluster_num'] == i].drop(['Project_name', 'Cluster_num', 'AnsTF'], axis=1), df_marge[df_marge['Cluster_num'] == i]["AnsTF"])
+      filename = f'src/models/cross/{cnum}clusters/{model_name}/cluster{i}_model.sav'
+      joblib.dump(model_dict[f"cluster_{i}"], filename)
     except ValueError as e:
       # model_dict["cluster_"+str(i)] = df_marge[df_marge['Cluster_num'] == i]["AnsTF"][0]
       print(f"cluster_{i} {e}")
@@ -143,29 +144,33 @@ def create_model(cnum: int, model_name: str):
 def select_model(model_name: str):
   match model_name:
     case "Logistic":
-      model = LogisticRegression(penalty='l2',          # 正則化項(L1正則化 or L2正則化が選択可能)
-                            class_weight='balanced',  # クラスに付与された重み
-                            random_state=0,     # 乱数シード
-                            solver='lbfgs',        # ハイパーパラメータ探索アルゴリズム
-                            max_iter=10000,          # 最大イテレーション数
-                            multi_class='auto',    # クラスラベルの分類問題（2値問題の場合'auto'を指定）
-                            warm_start=False,      # Trueの場合、モデル学習の初期化に前の呼出情報を利用
-                            n_jobs=None,           # 学習時に並列して動かすスレッドの数
-                          )
+      model = LogisticRegression(
+        penalty = "l2", # 正則化項(L1正則化 or L2正則化が選択可能)
+        class_weight = "balanced", # クラスに付与された重み
+        random_state = 0, # 乱数シード
+        solver = "lbfgs", # ハイパーパラメータ探索アルゴリズム
+        max_iter = 10000, # 最大イテレーション数
+        multi_class = "auto", # クラスラベルの分類問題（2値問題の場合'auto'を指定）
+        warm_start = False, # Trueの場合、モデル学習の初期化に前の呼出情報を利用
+        n_jobs = None, # 学習時に並列して動かすスレッドの数
+      )
+      
       return model
     
     case "RandomForest":
-      model = RandomForestClassifier(class_weight='balanced',
-                                     random_state=0,
-                                     )
+      model = RandomForestClassifier(
+        class_weight='balanced',
+        random_state=0,
+      )
       return model
     
     case "SVM":
-      model = SVC(kernel='linear',
-                  class_weight='balanced',
-                  C=1.0, 
-                  random_state=0
-                  )
+      model = SVC(
+        kernel='linear',
+        class_weight='balanced',
+        C=1.0, 
+        random_state=0
+      )
       return model
     
     case _:

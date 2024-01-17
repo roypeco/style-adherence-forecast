@@ -4,3 +4,4 @@ dataset_/
 __pycache__
 .pytest_cache/
 results/
+models/
