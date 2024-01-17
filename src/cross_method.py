@@ -9,7 +9,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 cnum = 10
 counter = 1
 path = "dataset/outputs"
-model_name = "RandomForest" # Logistic, RandomForest, SVMの３種類から選ぶ
+model_name = "SVM" # Logistic, RandomForest, SVMの３種類から選ぶ
 id_dict = {}
 bunseki_df = pd.DataFrame()
 model_dict, dummys = machine_learning_models.create_model(cnum, model_name)
@@ -92,10 +92,6 @@ for project_name in project_list:
   
   print(project_name, f"{counter} / {len(project_list)}")
   counter += 1
-  
-  if project_name == "wcwidth":
-    print(ans_list)
-    print(predict_result)
 
 result_df.to_csv(f"results/cross/{model_name}.csv")
 print(result_df)
