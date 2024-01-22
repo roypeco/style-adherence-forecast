@@ -89,6 +89,8 @@ def create_all_model(cnum, model_name: str):
   try:
     # model_all.fit(df_marge.drop(['Project_name', 'Cluster_num', 'AnsTF'], axis=1), df_marge["AnsTF"])
     model_all.fit(df_marge.drop(['Project_name', 'AnsTF'], axis=1), df_marge["AnsTF"])
+    filename = f'src/models/merge/{model_name}.sav'
+    joblib.dump(model_all, filename)
   except ValueError as e:
     print(e)
     
