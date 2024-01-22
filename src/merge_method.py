@@ -17,7 +17,7 @@ for i in list(dummys):
   id_dict[i] = []
 
 # for文を回すファイル名を取得
-with open("dataset/project_list.txt") as f:
+with open("dataset/white_list.txt") as f:
   project_list = f.read().splitlines()
 
 path = "dataset/outputs/"

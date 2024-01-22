@@ -61,7 +61,7 @@ def predict(explanatory_variable, label, project_name: str, model_name: str):
 # 出力（モデル:model，規約違反ダミー:list）
 def create_all_model(cnum, model_name: str):
   # for文を回すファイル名を取得
-  with open("dataset/project_list.txt") as f:
+  with open("dataset/white_list.txt") as f:
     project_list = f.read().splitlines()
 
   train_df = pd.DataFrame()
@@ -99,7 +99,7 @@ def create_all_model(cnum, model_name: str):
 # 入力（クラスタ数:int）
 # 出力（モデル:dict(key:project name, value:model))，規約違反ダミー:list）  
 def create_model(cnum: int, model_name: str):
-  with open("dataset/project_list.txt") as f:
+  with open("dataset/white_list.txt") as f:
     project_list = f.read().splitlines()
   
   df_all = pd.DataFrame()

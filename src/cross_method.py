@@ -17,7 +17,7 @@ result_df = pd.DataFrame(columns=['precision', 'recall', 'f1_score', 'accuracy']
 for i in list(dummys):
   id_dict[i] = []
 
-with open("dataset/project_list.txt") as f:
+with open("dataset/white_list.txt") as f:
   project_list = f.read().splitlines()
     
 for project_name in project_list:
