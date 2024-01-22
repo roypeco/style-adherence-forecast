@@ -20,7 +20,7 @@ def normalize_dataframe(input_df: pd.DataFrame):
 def get_cluster(cluster_num: int):
   df_all = pd.DataFrame()
 
-  with open("dataset/project_list.txt") as f:
+  with open("dataset/white_list.txt") as f:
     project_list = f.read().splitlines()
 
   for priject_name in project_list:
@@ -29,10 +29,10 @@ def get_cluster(cluster_num: int):
 
   # ラベルを得る
   # モデル訓練
-  df_norm = normalize_dataframe(df_all.iloc[:, 2:])
-  print(df_norm)
+  # df_norm = normalize_dataframe(df_all.iloc[:, 2:])
+  # print(df_norm)
   model = AgglomerativeClustering(n_clusters = cluster_num, metric = 'euclidean', linkage = 'ward')
-  y_hir_clus = model.fit_predict(df_norm)
+  y_hir_clus = model.fit_predict(df_all.iloc[:, 2:])
   for i in range(cluster_num):
     print(list(y_hir_clus).count(i))
   
