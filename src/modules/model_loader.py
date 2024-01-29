@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 path = "src/models"
 
-def load_mdoel(method_name: str, model_name: str, **kwargs):
+def load_model(method_name: str, model_name: str, **kwargs):
   if method_name == "conventional":
     for _, value in kwargs.items():
       model = joblib.load(f"{path}/{method_name}/{model_name}/{value}_model.sav")
@@ -23,11 +23,12 @@ def load_mdoel(method_name: str, model_name: str, **kwargs):
     return model_dict
   
 def get_dummy():
+  train_df = pd.DataFrame()
   with open("dataset/white_list.txt") as f:
    project_list = f.read().splitlines()
   
   for project_name in project_list:
-    df_value = pd.read_csv(f'{path}{project_name}_value.csv')
+    df_value = pd.read_csv(f'dataset/outputs/{project_name}_value.csv')
 
     X_train, _ = train_test_split(df_value, test_size=0.2, shuffle=False)
     train_df = pd.concat([train_df, X_train], axis=0)
