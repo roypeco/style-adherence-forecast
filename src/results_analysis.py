@@ -2,6 +2,7 @@ from modules import model_loader
 import pandas as pd
 import numpy as np
 import copy
+from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 
 model_name = "Logistic"  # Logistic, RandomForest, SVM の３種類から選ぶ
@@ -10,11 +11,15 @@ model_all = model_loader.load_model("merge", model_name)
 model_dict = model_loader.load_model("cross", model_name)
 id_dict = {}
 
-with open("dataset/white_list.txt") as f:
-  project_list = f.read().splitlines()
+# with open("dataset/white_list.txt") as f:
+#   project_list = f.read().splitlines()
+
+project_list = ["schema_salad", "pyphi", "serverless-application-model", "behave"] # 任意のプロジェクトだけを選択
+# project_list = ["behave"] # 任意のプロジェクトだけを選択
 
 for project_name in project_list:
   # プロジェクトごとのデータの読み込み
+  print(project_name)
   df_value = pd.read_csv(f'./dataset/outputs/{project_name}_value.csv')
   df_label = pd.read_csv(f'./dataset/outputs/{project_name}_label.csv', header=None)
   df_cluster = pd.read_csv(f'./dataset/outputs/{project_name}_cluster.csv', header=None)
@@ -31,7 +36,8 @@ for project_name in project_list:
   
   # 従来手法
   model = model_loader.load_model("conventional", model_name, project_name=project_name)
-  print(model.predict(X_test.drop(['Project_name'], axis=1)))
+  predicted = model.predict(X_test.drop(['Project_name'], axis=1))
+  print(confusion_matrix(Y_test, predicted))
   
 # 提案手法1
   id_dict.clear()
@@ -50,7 +56,8 @@ for project_name in project_list:
   id_df = pd.DataFrame(id_dict)
   not_dummy = not_dummy.reset_index(drop=True)
   test_df = pd.concat([id_df, not_dummy], axis=1)
-  print(model_all.predict(test_df.drop(['Warning ID', 'Project_name', 'Cluster_num', 'AnsTF'], axis=1)))
+  predicted = model_all.predict(test_df.drop(['Warning ID', 'Project_name', 'Cluster_num', 'AnsTF'], axis=1))
+  print(confusion_matrix(Y_test, predicted))
   
   # 提案手法2
   for i in range(10):
@@ -72,6 +79,7 @@ for project_name in project_list:
 
     except (AttributeError, KeyError) as e:
       print(f"{project_name}: skip cluster_{i} {e}")
-  print(np.array(predict_result))
+  # print(np.array(predict_result))
+  print(confusion_matrix(Y_test, np.array(predict_result)))
   
-  print(Y_test)
+  # print(Y_test)
