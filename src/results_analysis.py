@@ -33,6 +33,7 @@ for project_name in project_list:
   predict_result = []
   ans_list = []
   cluster_list = []
+  id_dict.clear()
   
   # 従来手法
   model = model_loader.load_model("conventional", model_name, project_name=project_name)
@@ -40,7 +41,6 @@ for project_name in project_list:
   print(confusion_matrix(Y_test, predicted))
   
 # 提案手法1
-  id_dict.clear()
   for i in list(dummys):
     id_dict[i] = []
   for wid in not_dummy["Warning ID"]:
@@ -80,6 +80,7 @@ for project_name in project_list:
     except (AttributeError, KeyError) as e:
       print(f"{project_name}: skip cluster_{i} {e}")
   # print(np.array(predict_result))
-  print(confusion_matrix(Y_test, np.array(predict_result)))
+  print(confusion_matrix(np.array(ans_list), np.array(predict_result)))
+  # print(cluster_list)
   
   # print(Y_test)

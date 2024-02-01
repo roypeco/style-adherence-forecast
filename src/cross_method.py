@@ -9,7 +9,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 cnum = 10
 counter = 1
 path = "dataset/outputs"
-model_name = "SVM" # Logistic, RandomForest, SVMの３種類から選ぶ
+model_name = "Logistic" # Logistic, RandomForest, SVMの３種類から選ぶ
 id_dict = {}
 bunseki_df = pd.DataFrame()
 model_dict, dummys = machine_learning_models.create_model(cnum, model_name)
