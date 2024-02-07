@@ -33,7 +33,7 @@ def predict(explanatory_variable, label, project_name: str, model_name: str):
     filename = f'src/models/conventional/{model_name}/{project_name}_model.sav'
     joblib.dump(model, filename)
   except ValueError as e:
-    print(project_name)
+    print(e)
     result = {'precision': "NaN", 'recall': "NaN", 'f1_score': "NaN", 'accuracy': "NaN"}
     return pd.DataFrame([result], index=[project_name]), 0
 

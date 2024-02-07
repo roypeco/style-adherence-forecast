@@ -14,7 +14,7 @@ id_dict = {}
 # with open("dataset/white_list.txt") as f:
 #   project_list = f.read().splitlines()
 
-project_list = ["schema_salad", "pyphi", "serverless-application-model", "behave"] # 任意のプロジェクトだけを選択
+project_list = ["schema_salad", "serverless-application-model", "transitions", "django-fsm"] # 任意のプロジェクトだけを選択
 # project_list = ["behave"] # 任意のプロジェクトだけを選択
 
 for project_name in project_list:
