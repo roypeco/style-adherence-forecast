@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def label_catcher(col: int, start_num: int, edge: int, df: pd.DataFrame):
     if int(df['Line Number_' + str(edge)][col]) != -1:
         return False

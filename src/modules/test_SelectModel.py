@@ -1,6 +1,7 @@
 import pytest
 from machine_learning_models import select_model
 
+
 class TestSelectModel:
   def test_case1(self):
     model = select_model("Logistic")

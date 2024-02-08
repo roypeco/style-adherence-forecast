@@ -1,7 +1,9 @@
 import os
+
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.cluster import AgglomerativeClustering
+from sklearn.preprocessing import MinMaxScaler
+
 
 # 正規化メソッド
 def normalize_dataframe(input_df: pd.DataFrame):

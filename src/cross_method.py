@@ -1,9 +1,10 @@
-import pandas as pd
-import numpy as np
 import copy
+
+import numpy as np
+import pandas as pd
 from modules import machine_learning_models
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 
 # 宣言
 cnum = 10

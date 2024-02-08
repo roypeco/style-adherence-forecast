@@ -1,6 +1,7 @@
 import joblib
 import pandas as pd
 from sklearn.model_selection import train_test_split
+
 path = "src/models"
 
 def load_model(method_name: str, model_name: str, **kwargs):

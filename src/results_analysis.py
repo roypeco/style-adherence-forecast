@@ -1,7 +1,8 @@
-from modules import model_loader
-import pandas as pd
-import numpy as np
 import copy
+
+import numpy as np
+import pandas as pd
+from modules import model_loader
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 

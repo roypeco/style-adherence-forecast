@@ -1,14 +1,21 @@
-import pandas as pd
-import numpy as np
+import copy
 import os
 import warnings
-import copy
+
 import joblib
-from sklearn.linear_model import LogisticRegression
+import numpy as np
+import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import (  # 評価指標算出用
+  accuracy_score,
+  f1_score,
+  precision_score,
+  recall_score,
+)
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score # 評価指標算出用
+from sklearn.svm import SVC
+
 warnings.filterwarnings("always", category=UserWarning)
 
 # 従来手法の予測結果の算出
