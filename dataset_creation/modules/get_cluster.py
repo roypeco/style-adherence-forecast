@@ -3,6 +3,7 @@ import os
 import pandas as pd
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
 
 
 # 正規化メソッド
@@ -32,12 +33,12 @@ def get_cluster(cluster_num: int):
 
     # ラベルを得る
     # モデル訓練
-    # df_norm = normalize_dataframe(df_all.iloc[:, 2:])
+    df_norm = normalize_dataframe(df_all.iloc[:, 2:])
     # print(df_norm)
     model = AgglomerativeClustering(
         n_clusters=cluster_num, metric="euclidean", linkage="ward"
     )
-    y_hir_clus = model.fit_predict(df_all.iloc[:, 2:])
+    y_hir_clus = model.fit_predict(df_norm)
     for i in range(cluster_num):
         print(list(y_hir_clus).count(i))
 
