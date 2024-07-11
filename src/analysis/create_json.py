@@ -2,7 +2,7 @@ import pandas as pd
 import json
 
 result_dict = {}
-# all_id = {}
+all_id = {}
 black_list = [
   'C0209',
   'W1514',
@@ -16,7 +16,7 @@ black_list = [
 with open("dataset/white_list.txt") as f:
   project_list = f.read().splitlines()
 
-for file_name in project_list[0:61]:
+for file_name in project_list:
   fix_dict = {"w":[0, 0],
               "c":[0, 0],
               "e":[0, 0],
@@ -27,16 +27,16 @@ for file_name in project_list[0:61]:
   df_value = pd.read_csv(f'./dataset/outputs/{file_name}_value.csv')
   df_wid = df_value["Warning ID"]
   for wid, label in zip(df_wid.to_list(), df_label[0]):
-    if "W" in wid and not wid in black_list:
+    if "W" in wid:
       fix_dict["w"][0] += label
       fix_dict["w"][1] += 1
-    elif "C" in wid and not wid in black_list:
+    elif "C" in wid:
       fix_dict["c"][0] += label
       fix_dict["c"][1] += 1
-    elif "E" in wid and not wid in black_list:
+    elif "E" in wid:
       fix_dict["e"][0] += label
       fix_dict["e"][1] += 1
-    elif "R" in wid and not wid in black_list:
+    elif "R" in wid:
       fix_dict["r"][0] += label
       fix_dict["r"][1] += 1
     # 類似度の差分を出すために消す
@@ -47,17 +47,19 @@ for file_name in project_list[0:61]:
     #   fix_dict["f"][0] += label
     #   fix_dict["f"][1] += 1
     
-    # if wid in all_id:
-    #   if all_id[wid][2]:
-    #     all_id[wid][0] += 1
-    #     all_id[wid][2] = False
-    # else:
-    #   all_id[wid] = [1, 62, False]
+    if wid in all_id:
+      if all_id[wid][2]:
+        all_id[wid][0] += 1
+        all_id[wid][2] = False
+    else:
+      all_id[wid] = [1, 68, False]
     
   result_dict[f"{file_name}"] = fix_dict
   
-  # for flg in all_id:
-  #   all_id[flg][2] = True
+  for flg in all_id:
+    all_id[flg][2] = True
+    
+print(all_id)
 
 # print(json.dumps(result_dict, indent=4))
 # with open('dataset/test_output.json', 'w') as f:

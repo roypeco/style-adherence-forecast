@@ -1,6 +1,7 @@
 from src.modules import model_loader
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
+import japanize_matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import collections
@@ -8,7 +9,7 @@ import csv
 
 model_name = "Logistic"  # Logistic, RandomForest, SVM の３種類から選ぶ
 dummys = model_loader.get_dummy()
-project_name = "schema_salad"
+project_name = "transitions"
 id_dict = {}
 list1 = []
 list2 = []
@@ -91,20 +92,24 @@ for i, j, k, l in zip(not_dummy["Warning ID"].to_list(), test_label[0].to_list()
 for i in not_dummy_t["Warning ID"].to_list():
     list4.append(i)
 
-print("従来")
-print(collections.Counter(list1))
-print("提案")
-print(collections.Counter(list2))
-print("テストデータ")
-print(collections.Counter(list3))
-print("学習データ")
-print(collections.Counter(list4))
+# print("従来")
+# print(collections.Counter(list1))
+# print("提案")
+# print(collections.Counter(list2))
+# print("テストデータ")
+# print(collections.Counter(list3))
+# print("学習データ")
+# print(collections.Counter(list4))
 # print(confusion_matrix(test_label[0].to_list(), pre_list))
 # print(confusion_matrix(test_label[0].to_list(), pre_list2))
 
 # 図示
-# plt.figure(figsize = (10,6))
-# plt.barh(y = range(len(values)), width = values)
-# plt.yticks(ticks = range(len(keys)), labels = keys)
-# # plt.savefig(f'merge_{model_name}.png')
-# plt.show()
+plt.figure(figsize=(12, 8))  # グラフのサイズを変更
+plt.barh(y=keys, width=values)  # y軸をカラム名(keys)に変更
+plt.xlabel('係数', fontsize=20)  # x軸の軸名を「係数」に変更し、ラベルのサイズを拡大
+plt.ylabel('カラム名', fontsize=20)  # y軸の軸名を「カラム名」に変更し、ラベルのサイズを拡大
+plt.xticks(fontsize=14)  # x軸のラベルのサイズを拡大
+plt.yticks(fontsize=14)  # y軸のラベルのサイズを拡大
+plt.tight_layout()  # レイアウトを自動調整
+plt.savefig(f'results/{project_name}_{model_name}.png', bbox_inches='tight')  # 画像を保存
+plt.show()
