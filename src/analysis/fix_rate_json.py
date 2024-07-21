@@ -1,5 +1,6 @@
 import pandas as pd
 import json
+from sklearn.model_selection import train_test_split
 
 result_dict = {}
 
@@ -11,7 +12,14 @@ for file_name in project_list:
   rate_dict = {}
   df_label = pd.read_csv(f'./dataset/outputs/{file_name}_label.csv', header=None)
   df_value = pd.read_csv(f'./dataset/outputs/{file_name}_value.csv')
+  df_label, _ = train_test_split(
+    df_label, test_size=0.2, shuffle=False
+  )
+  df_value, _ = train_test_split(
+    df_value, test_size=0.2, shuffle=False
+  )
   df_wid = df_value["Warning ID"]
+  
   for wid, label in zip(df_wid.to_list(), df_label[0]):
     if wid in fix_dict:
       fix_dict[wid][0] += label
@@ -26,6 +34,6 @@ for file_name in project_list:
   
   result_dict[file_name] = rate_dict
   
-print(json.dumps(result_dict, indent=4))
+# print(json.dumps(result_dict, indent=4))
 with open('dataset/fix_rate.json', 'w') as f:
     json.dump(result_dict, f, indent=2)
