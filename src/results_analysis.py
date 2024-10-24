@@ -8,7 +8,7 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from sklearn.model_selection import train_test_split
 from collections import Counter
 
-model_name = "Logistic"  # Logistic, RandomForest, SVM の３種類から選ぶ
+model_name = "RandomForest"  # Logistic, RandomForest, SVM の３種類から選ぶ
 dummys = model_loader.get_dummy()
 model_all = model_loader.load_model("merge", model_name)
 model_dict = model_loader.load_model("cross", model_name)
@@ -17,16 +17,21 @@ res_dict = {}
 all_predict_list = []
 all_answer_list = []
 all_cluster_list = []
+conv_list = []
+pre1_list = []
+pre2_list = []
+test_num_list = []
+ans_num_list = []
 
-# with open("dataset/white_list.txt") as f:
-#   project_list = f.read().splitlines()
+with open("dataset/white_list.txt") as f:
+  project_list = f.read().splitlines()
 
-project_list = [
-    "schema_salad",
-    # "serverless-application-model",
-    # "transitions",
-    # "django-fsm",
-]  # 任意のプロジェクトだけを選択
+# project_list = [
+#     "schema_salad",
+#     # "serverless-application-model",
+#     # "transitions",
+#     # "django-fsm",
+# ]  # 任意のプロジェクトだけを選択
 
 for project_name in project_list:
     # プロジェクトごとのデータの読み込み
@@ -145,30 +150,35 @@ for project_name in project_list:
             print(f"{project_name}: skip cluster_{i} {e}")
     # print(np.array(predict_result))
     # print(confusion_matrix(np.array(ans_list), np.array(predict_result)))
+    conv_list.append(sum(predicted))
+    pre1_list.append(sum(predicted1))
+    pre2_list.append(sum(predict_result))
+    test_num_list.append(len(test_df['AnsTF'].to_list()))
+    ans_num_list.append(sum(test_df['AnsTF'].to_list()))
+    # print(f"{project_name}\nテストケース数: {len(test_df['AnsTF'].to_list())}\n従来サジェスト数: {sum(predicted)}\n提案1サジェスト数: {sum(predicted1)}\n提案2サジェスト数: {sum(predict_result)}\n必要修正数: {sum(test_df['AnsTF'].to_list())}")
 
-df_analysis = pd.DataFrame(
-    {
-        "Warning ID": not_dummy["Warning ID"].to_list(),
-        "conventional": predicted,
-        "suggestion1": predicted1,
-        "answer": Y_test,
-    }
-)
+# リストの中央値と平均値を計算してプリントする関数
+def print_statistics(list_name, data_list):
+    median_value = np.median(data_list)
+    mean_value = np.mean(data_list)
+    print(f"{list_name}の中央値: {median_value}")
+    print(f"{list_name}の平均値: {mean_value}\n")
+
+# 各リストの統計量を計算して表示
+print_statistics("従来サジェスト数", conv_list)
+print_statistics("提案1サジェスト数", pre1_list)
+print_statistics("提案2サジェスト数", pre2_list)
+print_statistics("テストケース数", test_num_list)
+print_statistics("必要修正数", ans_num_list)
+# df_analysis = pd.DataFrame(
+#     {
+#         "Warning ID": not_dummy["Warning ID"].to_list(),
+#         "conventional": predicted,
+#         "suggestion1": predicted1,
+#         "answer": Y_test,
+#     }
+# )
 # print(df_analysis)
-
-# result_counter = {"w_correct": 0, "w_notcorrect": 0, "pre_correct": 0, "sug_correct": 0}
-# for pre, pre1, ans in zip(df_analysis["conventional"].to_list(), df_analysis["suggestion1"].to_list(), df_analysis["answer"].to_list()):
-#     if (pre == 1 and pre1 == 1 and ans == 1 ) or (pre == 0 and pre1 == 0 and ans == 0):
-#         result_counter["w_correct"] += 1
-#     elif (pre == 1 and pre1 == 1 and ans == 0 ) or (pre == 0 and pre1 == 0 and ans == 1):
-#         result_counter["w_notcorrect"] += 1
-#     elif (pre == 1 and pre1 == 0 and ans == 1 ) or (pre == 0 and pre1 == 1 and ans == 0):
-#         result_counter["pre_correct"] += 1
-#     elif (pre == 0 and pre1 == 1 and ans == 1) or (pre == 1 and pre1 == 0 and ans == 0):
-#         result_counter["sug_correct"] += 1
-#     else:
-#         print("fuckin out of case")
-# print(result_counter)
 
 # result_counter = {"w_correct": 0, "w_notcorrect": 0, "pre_correct": 0, "sug_correct": 0}
 # waid = "R1705"
@@ -183,21 +193,22 @@ df_analysis = pd.DataFrame(
 #         result_counter["sug_correct"] += 1
 # print(result_counter)
 
-result_counter = {"w_correct": 0, "w_notcorrect": 0, "pre_correct": 0, "sug_correct": 0}
-for pre, pre1, ans in zip(
-    df_analysis["conventional"].to_list(),
-    df_analysis["suggestion1"].to_list(),
-    df_analysis["answer"].to_list(),
-):
-    if pre == 1 and pre1 == 1 and ans == 1:
-        result_counter["w_correct"] += 1
-    elif pre == 0 and pre1 == 0 and ans == 1:
-        result_counter["w_notcorrect"] += 1
-    elif pre == 1 and pre1 == 0 and ans == 1:
-        result_counter["pre_correct"] += 1
-    elif pre == 0 and pre1 == 1 and ans == 1:
-        result_counter["sug_correct"] += 1
-print(result_counter)
+# result_counter = {"w_correct": 0, "w_notcorrect": 0, "pre_correct": 0, "sug_correct": 0}
+# for pre, pre1, ans in zip(
+#     df_analysis["conventional"].to_list(),
+#     df_analysis["suggestion1"].to_list(),
+#     df_analysis["answer"].to_list(),
+# ):
+#     if pre == 1 and pre1 == 1 and ans == 1:
+#         result_counter["w_correct"] += 1
+#     elif pre == 0 and pre1 == 0 and ans == 1:
+#         result_counter["w_notcorrect"] += 1
+#     elif pre == 1 and pre1 == 0 and ans == 1:
+#         result_counter["pre_correct"] += 1
+#     elif pre == 0 and pre1 == 1 and ans == 1:
+#         result_counter["sug_correct"] += 1
+# print(result_counter)
+
 # tmp_list = df_analysis["Warning ID"].to_list()
 
 # counter = Counter(tmp_list).most_common()

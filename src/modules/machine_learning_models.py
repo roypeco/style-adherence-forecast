@@ -39,15 +39,22 @@ def predict(explanatory_variable, label, project_name: str, model_name: str):
     X_train, X_test, Y_train, Y_test = train_test_split(
         df_marge, label, test_size=0.2, shuffle=False
     )
+    
+    # 一旦追加行------
+    X_train, _, Y_train, _ = train_test_split(
+        X_train, Y_train, test_size=0.9, shuffle=False
+    )
+    # print(X_train)
+    # -----------
+    
     Y_train = Y_train.values.ravel()
     Y_test = Y_test.values.ravel()
 
     # モデルの学習
-    # model.fit(X_train.drop(['Project_name', 'Cluster_num'], axis=1), Y_train)
     try:
         model.fit(X_train.drop(["Project_name"], axis=1), Y_train)
         filename = f"src/models/conventional/{model_name}/{project_name}_model.sav"
-        joblib.dump(model, filename)
+        # joblib.dump(model, filename)
     except ValueError as e:
         print(e)
         result = {
