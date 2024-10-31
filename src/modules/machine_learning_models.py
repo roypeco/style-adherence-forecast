@@ -198,6 +198,76 @@ def create_model(cnum: int, model_name: str):
 
     return model_dict, dummys
 
+def step_predict(explanatory_variable, label, project_name: str, model_name: str):
+    # for文を回すファイル名を取得
+    with open("dataset/white_list.txt") as f:
+        project_list = f.read().splitlines()
+    project_list.remove(project_name)
+    id_dict = {}
+    train_df = pd.DataFrame()
+
+    path = "dataset/outputs/"
+
+    for project_name in project_list:
+        X_train = pd.read_csv(f"{path}{project_name}_value.csv")
+        Y_train = pd.read_csv(f"{path}{project_name}_label.csv", header=None)
+        Y_train = Y_train.values.ravel()
+        X_train["AnsTF"] = copy.deepcopy(Y_train)
+        train_df = pd.concat([train_df, X_train], axis=0)
+
+    # 引数で受け取ったデータを結合
+    label = label.values.ravel()
+    explanatory_variable["AnsTF"] = copy.deepcopy(label)
+    train_all, test_data = train_test_split(
+        explanatory_variable, test_size=0.2, shuffle=False
+    )
+    test_data = test_data.reset_index(drop=True)
+    
+    for i in range(1, 11):
+        model_all = select_model(model_name)
+        train_part, _ = train_test_split(
+            train_all, test_size=(i/10), shuffle=False
+        )
+        train_df = pd.concat([train_df, train_part], axis=0)
+        # コーディング規約IDをダミー変数化
+        df_marge = pd.concat(
+            [pd.get_dummies(train_df["Warning ID"]), train_df.drop(columns="Warning ID")],
+            axis=1,
+        )
+        dummys = list(pd.get_dummies(train_df["Warning ID"]))
+
+        try:
+            model_all.fit(
+                df_marge.drop(["Project_name", "AnsTF"], axis=1), df_marge["AnsTF"]
+            )
+            # filename = f"src/models/merge/{model_name}.sav"
+            # joblib.dump(model_all, filename)
+        except ValueError as e:
+            print(e)
+            
+        id_dict.clear()
+        for i in list(dummys):
+            id_dict[i] = []
+        for wid in test_data["Warning ID"]:
+            if wid in id_dict:
+                id_dict[wid].append(1)
+                for i in id_dict:
+                    id_dict[i].append(0)
+                id_dict[wid].pop(-1)
+            else:
+                for i in id_dict:
+                    id_dict[i].append(0)
+        
+        id_df = pd.DataFrame(id_dict)
+        test_data = pd.concat([id_df, test_data], axis=1)
+        
+        predict_result = model_all.predict(
+            test_data.drop(["Warning ID", "Project_name", "AnsTF"], axis=1)
+        )
+        print("kokodao")
+        print(predict_result)
+
+    # return model_all, dummys
 
 def select_model(model_name: str):
     match model_name:

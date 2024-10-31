@@ -4,12 +4,15 @@ import pandas as pd
 from modules import machine_learning_models
 
 # 宣言
-model_name = "Logistic"  # Logistic, RandomForest, SVMの３種類から選ぶ
+model_name = "RandomForest"  # Logistic, RandomForest, SVMの３種類から選ぶ
 counter = 1
 
 # for文を回すファイル名を取得
 with open("dataset/white_list.txt") as f:
     project_list = f.read().splitlines()
+
+project_list = ["pywal"]#, "jenkinsapi", "analytics-python", "edx-search", "python-resize-image",
+                #"pyhomematic", "bidict", "azure-activedirectory-library-for-python", "django-sortedm2m", "edx-drf-extensions"]
 
 
 # 結果格納用のDFの宣言
@@ -25,8 +28,6 @@ for file_name in project_list:
         print(file_name, e)
     tmp1, _ = machine_learning_models.predict(df_value, df_label, file_name, model_name)
     result_df = pd.concat([result_df, tmp1], axis=0)
-    print(file_name, f"{counter} / {len(project_list)}")
-    counter += 1
 
-result_df.to_csv(f"results/conventional/{model_name}.csv")
+result_df.to_csv(f"results/anyPercent.csv")
 print(result_df)
