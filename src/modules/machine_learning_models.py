@@ -205,6 +205,7 @@ def step_predict(explanatory_variable, label, project_name: str, model_name: str
     project_list.remove(project_name)
     id_dict = {}
     train_df = pd.DataFrame()
+    returnDF = pd.DataFrame(columns=["precision", "recall", "f1_score", "accuracy"])
 
     path = "dataset/outputs/"
 
@@ -222,52 +223,54 @@ def step_predict(explanatory_variable, label, project_name: str, model_name: str
         explanatory_variable, test_size=0.2, shuffle=False
     )
     test_data = test_data.reset_index(drop=True)
-    
+
     for i in range(1, 11):
         model_all = select_model(model_name)
         train_part, _ = train_test_split(
-            train_all, test_size=(i/10), shuffle=False
+            train_all, test_size=(i / 10), shuffle=False
         )
         train_df = pd.concat([train_df, train_part], axis=0)
+
         # コーディング規約IDをダミー変数化
+        dummys_train = pd.get_dummies(train_df["Warning ID"])
         df_marge = pd.concat(
-            [pd.get_dummies(train_df["Warning ID"]), train_df.drop(columns="Warning ID")],
+            [dummys_train, train_df.drop(columns="Warning ID")],
             axis=1,
         )
-        dummys = list(pd.get_dummies(train_df["Warning ID"]))
+        
+        # テストデータのダミー変数化
+        dummys_test = pd.get_dummies(test_data["Warning ID"])
+        dummys_test = dummys_test.reindex(columns=dummys_train.columns, fill_value=0)  # trainと同じ列に合わせる
+        test_data = pd.concat([dummys_test, test_data.drop(columns="Warning ID")], axis=1)
 
         try:
             model_all.fit(
                 df_marge.drop(["Project_name", "AnsTF"], axis=1), df_marge["AnsTF"]
             )
-            # filename = f"src/models/merge/{model_name}.sav"
-            # joblib.dump(model_all, filename)
         except ValueError as e:
             print(e)
-            
-        id_dict.clear()
-        for i in list(dummys):
-            id_dict[i] = []
-        for wid in test_data["Warning ID"]:
-            if wid in id_dict:
-                id_dict[wid].append(1)
-                for i in id_dict:
-                    id_dict[i].append(0)
-                id_dict[wid].pop(-1)
-            else:
-                for i in id_dict:
-                    id_dict[i].append(0)
-        
-        id_df = pd.DataFrame(id_dict)
-        test_data = pd.concat([id_df, test_data], axis=1)
+            continue
         
         predict_result = model_all.predict(
-            test_data.drop(["Warning ID", "Project_name", "AnsTF"], axis=1)
+            test_data.drop(["Project_name", "AnsTF"], axis=1)
         )
-        print("kokodao")
-        print(predict_result)
+        result = {
+            "precision": format(
+                precision_score(test_data["AnsTF"].to_list(), predict_result, zero_division=np.nan), ".2f"
+            )
+        }
+        result["recall"] = format(
+            recall_score(test_data["AnsTF"].to_list(), predict_result, zero_division=np.nan), ".2f"
+        )
+        result["f1_score"] = format(
+            f1_score(test_data["AnsTF"].to_list(), predict_result, zero_division=np.nan), ".2f"
+        )
+        result["accuracy"] = format(accuracy_score(test_data["AnsTF"].to_list(), predict_result), ".2f")
+        tmp = pd.DataFrame([result], index=[f"{project_name}@{i*10}%"])
+        returnDF = pd.concat([returnDF, tmp], axis=0)
 
-    # return model_all, dummys
+    return returnDF
+
 
 def select_model(model_name: str):
     match model_name:
