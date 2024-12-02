@@ -228,18 +228,19 @@ def step_predict(explanatory_variable, label, project_name: str, model_name: str
     for i in range(1, 10):
         model_all = select_model(model_name)
         train_part, _ = train_test_split(
-            train_all, test_size=(i/10), shuffle=False
+            train_all, test_size=((10-i)/10), shuffle=False
         )
-        train_df = pd.concat([train_df, train_part], axis=0)
+        use_train_df = pd.concat([train_df, train_part], axis=0)
         # コーディング規約IDをダミー変数化
         df_marge = pd.concat(
-            [pd.get_dummies(train_df["Warning ID"]), train_df.drop(columns="Warning ID")],
+            [pd.get_dummies(use_train_df["Warning ID"]), use_train_df.drop(columns="Warning ID")],
             axis=1,
         )
-        dummys = list(pd.get_dummies(train_df["Warning ID"]))
+        dummys = list(pd.get_dummies(use_train_df["Warning ID"]))
         # print(dummys)
 
         try:
+            print(len(df_marge["AnsTF"].to_list()))
             model_all.fit(
                 df_marge.drop(["Project_name", "AnsTF"], axis=1), df_marge["AnsTF"]
             )
@@ -263,8 +264,8 @@ def step_predict(explanatory_variable, label, project_name: str, model_name: str
         
         id_df = pd.DataFrame(id_dict)
         test_data_2nd = pd.concat([id_df, test_data], axis=1)
-        print(len(list(df_marge.columns)))
-        print(len(list(test_data_2nd.columns))-1)
+        # print(len(list(df_marge.columns)))
+        # print(len(list(test_data_2nd.columns))-1)
         # print(list(test_data.columns))
         
         predict_result = model_all.predict(
