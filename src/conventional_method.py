@@ -4,15 +4,17 @@ import pandas as pd
 from modules import machine_learning_models
 
 # 宣言
-model_name = "RandomForest"  # Logistic, RandomForest, SVMの３種類から選ぶ
+model_name = "RandomForest"  # Logistic, RandomForest, DecisionTreeの３種類から選ぶ
 counter = 1
 
 # for文を回すファイル名を取得
 with open("dataset/white_list.txt") as f:
     project_list = f.read().splitlines()
 
-project_list = ["pywal"]#, "jenkinsapi", "analytics-python", "edx-search", "python-resize-image",
+# project_list = ["pywal"], "jenkinsapi", "analytics-python", "edx-search", "python-resize-image",
                 #"pyhomematic", "bidict", "azure-activedirectory-library-for-python", "django-sortedm2m", "edx-drf-extensions"]
+project_list = ["tldextract", "edx-search", "easyquotation", "django-rest-swagger", "flaky",
+    "implicit", "python-sshpubkeys", "munch", "python-resize-image"]
 
 
 # 結果格納用のDFの宣言

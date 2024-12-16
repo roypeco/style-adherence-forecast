@@ -15,6 +15,7 @@ from sklearn.metrics import (  # 評価指標算出用
 )
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
 
 warnings.filterwarnings("always", category=UserWarning)
 
@@ -70,6 +71,7 @@ def predict(explanatory_variable, label, project_name: str, model_name: str):
     predict_result = model.predict(X_test.drop(["Project_name"], axis=1))
 
     # 分析用DF
+    # print(Y_test)
     return_df = copy.deepcopy(X_test)
     return_df["real_TF"] = copy.deepcopy(Y_test)
     return_df["predict_TF"] = copy.deepcopy(predict_result)
@@ -225,11 +227,14 @@ def step_predict(explanatory_variable, label, project_name: str, model_name: str
     )
     test_data = test_data.reset_index(drop=True)
     
-    for i in range(1, 10):
+    for i in range(1, 11):
         model_all = select_model(model_name)
-        train_part, _ = train_test_split(
-            train_all, test_size=((10-i)/10), shuffle=False
-        )
+        if i < 10:
+            train_part, _ = train_test_split(
+                train_all, test_size=((10-i)/10), shuffle=False
+            )
+        else:
+            train_part = train_all
         use_train_df = pd.concat([train_df, train_part], axis=0)
         # コーディング規約IDをダミー変数化
         df_marge = pd.concat(
@@ -315,6 +320,15 @@ def select_model(model_name: str):
 
         case "SVM":
             model = SVC(kernel="linear", class_weight="balanced", C=1.0, random_state=0)
+            return model
+        
+        case "DecisionTree":
+            model = DecisionTreeClassifier(
+                criterion="gini",  # または "entropy"
+                splitter="best",  # または "random"
+                max_depth=None,   # 最大深さ
+                random_state=0,   # 再現性確保のため
+            )
             return model
 
         case _:
